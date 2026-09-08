@@ -190,8 +190,8 @@
           <input type="text" id="nameSearch" placeholder="Search your name…" oninput="onNameInput()" onkeydown="onKeyDown(event)" autocomplete="off" spellcheck="false">
           <div class="suggestions" id="suggestions" style="display:none;"></div>
         </div>
-        <button class="toggle-btn" id="toggleHighlight" onclick="toggleHighlightMode()" style="display:none;" title="Show every game, with yours highlighted, instead of only yours">
-          <i class="ti ti-list-details" aria-hidden="true"></i> Show all &amp; highlight mine
+        <button class="toggle-btn active" id="toggleHighlight" onclick="toggleHighlightMode()" style="display:none;" title="Show every game, with yours highlighted, instead of only yours">
+          <i class="ti ti-list-details" aria-hidden="true"></i> Show My Games Only
         </button>
       </div>
       <div id="highlightLegend" class="highlight-legend" style="display:none;">
@@ -407,15 +407,15 @@ function getLogoUrl(opponent) {
 let SCHEDULE = [];
 const TODAY = new Date().toISOString().split('T')[0];
 let hidePast = false;
-let highlightMode = false;
+let highlightMode = true;
 
 function toggleHighlightMode() {
   highlightMode = !highlightMode;
   const btn = document.getElementById('toggleHighlight');
   btn.classList.toggle('active', highlightMode);
   btn.innerHTML = highlightMode
-    ? '<i class="ti ti-list-details" aria-hidden="true"></i> Show only mine'
-    : '<i class="ti ti-list-details" aria-hidden="true"></i> Show all &amp; highlight mine';
+    ? '<i class="ti ti-list-details" aria-hidden="true"></i> Show My Games Only'
+    : '<i class="ti ti-list-details" aria-hidden="true"></i> Show All Games';
   render();
 }
 let savedName = localStorage.getItem('crew_name') || '';
