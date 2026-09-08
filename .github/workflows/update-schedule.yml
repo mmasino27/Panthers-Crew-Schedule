@@ -42,6 +42,62 @@ jobs:
             '2023 Stanley Cup Playoffs Round 1',
           }
 
+          # ── Positions that should NEVER be flagged as "Open" even when blank ──
+          # (occasional/special-event-only positions, not routine per-game roles)
+          EXCLUDE_FROM_OPEN_FLAG = {
+            'Video Engineer',
+            'Utility / Training', 'Utility / Training 2',
+            'Blimp Operator 1', 'Blimp Operator 2',
+          }
+
+          # ── Fallback list of tracked positions, in case the live schema fetch ──
+          # below fails (e.g. token lacks schema.bases:read scope). This is a
+          # snapshot of real Airtable field names as of Sept 2026. If Airtable
+          # gains new position columns later, the live fetch picks them up
+          # automatically; this fallback just prevents the whole workflow from
+          # breaking if that fetch ever fails.
+          FALLBACK_TRACKED_POSITIONS = [
+            'Executive Producer', 'Entertainment Producer', 'Associate Producer',
+            'Production Associate', 'Digital Displays Associate', 'Engineer/AV Lead',
+            'Engineer 2', 'PA Announcer', 'Host', 'Stage Manager 1', 'Stage Manager 2',
+            'Stage Manager 3', 'Stage Manager 4', 'Stage Manager 5', 'Organist',
+            'Spotter', 'DJ', 'Director', 'Technical Director', '7Point Audio / Music',
+            'Ross Tessera 1 (LED)', 'Ross Tessera 2 (LED)', 'Ross Kiva (Playback)',
+            'CG 1', 'CG 2', 'Social Media', 'Replay (A & B)', 'Replay (C & D)',
+            'Replay (E & F)', 'Replay (Tagging)', 'Replay (Alternate)',
+            'Audio 1 / Mixer', 'Shader', 'Camera 1', 'Camera 2', 'Camera 3',
+            'Camera 4 (Video Coach Cam)', 'Camera 5 (Wireless)', 'Camera 6 (Wireless)',
+            'Grip', 'Robo Cam (Faceoff 1-4)', 'Robo Cam Scoreboard (1-2)',
+            'Robo Cam Scoreboard (3 & 4)', 'Robo Camera 7', 'Lighting',
+            'Lighting Engineer', 'Spot 1', 'Spot 2', 'Spot 3', 'Spot 4', 'SMT',
+            'Audio Engineer', 'Projection SMT (Catwalk)', 'ENG Shooter 1',
+            'ENG Shooter 2', 'ENG Shooter 3', 'Training', 'Training 2',
+          ]
+
+          # ── Try to fetch the live field list so new Airtable columns are ──
+          # picked up automatically. Falls back to the static list above if
+          # this fails for any reason (never let this break the whole workflow).
+          tracked_positions = list(FALLBACK_TRACKED_POSITIONS)
+          try:
+            schema_req = urllib.request.Request(
+              f'https://api.airtable.com/v0/meta/bases/{base_id}/tables',
+              headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
+            )
+            with urllib.request.urlopen(schema_req, timeout=15) as resp:
+              schema_data = json.loads(resp.read())
+            for t in schema_data.get('tables', []):
+              if t.get('id') == table_id:
+                live_positions = [
+                  fld['name'] for fld in t.get('fields', [])
+                  if fld.get('name') and fld['name'] not in SKIP
+                  and fld['name'] not in EXCLUDE_FROM_OPEN_FLAG
+                ]
+                if live_positions:
+                  tracked_positions = live_positions
+                break
+          except Exception as e:
+            print(f'Schema fetch failed, using fallback tracked-positions list: {e}')
+
           def extract(val):
             if val is None: return ''
             if isinstance(val, str): return val
@@ -98,6 +154,12 @@ jobs:
               extracted = extract(val)
               if extracted:
                 rec['roles'][key] = extracted
+
+            # Positions from the tracked list that are blank for this game.
+            rec['openPositions'] = [
+              pos for pos in tracked_positions
+              if not extract(f.get(pos))
+            ]
             clean.append(rec)
 
           clean.sort(key=lambda x: x['date'])
