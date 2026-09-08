@@ -19,10 +19,6 @@
 .sched-wrap .greeting-text strong{display:block;font-size:16px;font-weight:600;}
 .sched-wrap .greeting-clear{font-size:12px;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;}
 .sched-wrap .greeting-clear:hover{background:rgba(255,255,255,0.1);color:#fff;}
-.sched-wrap .open-positions-summary{background:#fdecea;color:#8a1c11;border:1px solid #f3b9b0;border-radius:var(--radius-lg);padding:0.75rem 1.125rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;animation:fadeIn 0.3s ease;}
-.sched-wrap .open-positions-summary i{font-size:18px;color:#C8102E;flex-shrink:0;}
-.sched-wrap .open-positions-flag{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 14px 2px;font-size:12px;font-weight:600;color:#8a1c11;text-align:right;}
-.sched-wrap .open-positions-flag i{font-size:14px;color:#C8102E;flex-shrink:0;}
 .sched-wrap .search-row{display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;position:relative;flex-wrap:wrap;}
 .sched-wrap .search-row .toggle-btn{flex-shrink:0;white-space:nowrap;}
 .sched-wrap .highlight-legend{display:flex;gap:16px;font-size:12px;color:var(--text2);margin:-0.75rem 0 1.25rem;}
@@ -103,6 +99,7 @@
 .sched-wrap .crew-row:last-child{border-bottom:none;}
 .sched-wrap .crew-role{color:var(--text2);font-size:11px;flex-shrink:0;margin-right:8px;}
 .sched-wrap .crew-name{color:var(--text);font-weight:500;text-align:right;}
+.sched-wrap .crew-name.open-role{color:#C8102E;font-weight:700;}
 .sched-wrap .crew-name.highlight{color:var(--red);font-weight:700;}
 @media(prefers-color-scheme:dark){.sched-wrap .crew-name.highlight{color:#f07080;}}
 .sched-wrap .empty{text-align:center;padding:3.5rem 1rem;color:var(--text3);}
@@ -173,11 +170,6 @@
   <!-- ══ SCHEDULE TAB ══ -->
   <div id="tab-schedule" class="tab-panel active">
     <div class="sched-wrap">
-
-      <div id="openPositionsSummary" class="open-positions-summary" style="display:none;">
-        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
-        <span id="openPositionsSummaryText"></span>
-      </div>
 
       <div id="greetingBanner" style="display:none;" class="greeting">
         <div class="greeting-left">
@@ -341,21 +333,24 @@ function isGame(g) { return NHL_TEAMS.has(g.opponent); }
 
 const ROLE_ORDER = [
   'Executive Producer','Entertainment Producer','Associate Producer','Production Associate',
-  'Director','Technical Director','PA Announcer','Host',
-  'Stage Manager 1','Stage Manager 2','Stage Manager 3','Stage Manager 4','Stage Manager 5',
-  'Organist','Spotter','DJ',
-  'Engineer/AV Lead','Engineer 2','Click Audio / Music',
-  'Ross Tessera 1 (LED)','Ross Tessera 2 (LED)','Ross Kiva (Video Playback)',
-  'Replay (A & B)','Replay (C & D)','Replay (Alternate)',
-  'CG','Audio 1 / Mixer','Shader',
-  'Camera 1','Camera 2','Camera 3','Camera 4 (Video Coach Cam)','Camera 5 (Wireless)',
-  'Robo Camera 5','Robo Camera 6 & 7','Robo Camera 7','Grip',
+  'Digital Displays Associate','Engineer/AV Lead','Engineer 2','PA Announcer','Host',
+  'Stage Manager 1','Stage Manager 2','Stage Manager 3','Stage Manager 4',
+  'Organist','Spotter','DJ','Director','Technical Director','7Point Audio / Music',
+  'Ross Tessera 1 (LED)','Ross Tessera 2 (LED)','Ross Kiva (Playback)',
+  'CG 1','CG 2','Social Media',
+  'Replay (A & B)','Replay (C & D)','Replay (E & F)','Replay (Tagging)',
+  'Audio 1 / Mixer','Shader',
+  'Camera 1','Camera 2','Camera 3','Camera 4 (Video Coach Cam)','Camera 5 (Wireless)','Camera 6 (Wireless)',
+  'Grip','Robo Cam (Faceoff 1-4)','Robo Cam Scoreboard (1-2)','Robo Cam Scoreboard (3 & 4)',
   'Lighting','Lighting Engineer','Spot 1','Spot 2','Spot 3','Spot 4',
-  'SMT','Audio Engineer','Video Engineer',
-  'Blimp Operator 1','Blimp Operator 2',
-  'Projection SMT (Catwalk)','ENG Shooter 1','ENG Shooter 2','ENG Shooter 3',
-  'Training','Training 2','Utility / Training',
+  'SMT','Audio Engineer',
 ];
+
+// Positions blank on a game get an auto-filled red "Open" row in the crew
+// list. Any position NOT in this list is simply omitted when blank (as
+// before) — but if it DOES have a name filled in, it still displays normally
+// regardless of whether it's tracked here.
+const TRACKED_POSITIONS = ROLE_ORDER;
 
 function sortRoles(rolesObj) {
   return Object.entries(rolesObj).sort(([a],[b]) => {
@@ -364,6 +359,16 @@ function sortRoles(rolesObj) {
     if (ai===-1) return 1; if (bi===-1) return -1;
     return ai-bi;
   });
+}
+
+const OPEN_MARKER = '__OPEN__';
+
+function buildDisplayRoles(rolesObj) {
+  const merged = Object.assign({}, rolesObj||{});
+  for (const pos of TRACKED_POSITIONS) {
+    if (!merged[pos]) merged[pos] = OPEN_MARKER;
+  }
+  return merged;
 }
 
 const TEAM_LOGOS = {
@@ -590,17 +595,6 @@ let filtered=[];
 function render() {
   const name=document.getElementById('nameSearch').value.trim();
 
-  // Open Positions summary — reflects the whole season, independent of name search
-  const upcomingWithOpen=SCHEDULE.filter(g=>g.date>=TODAY&&g.openPositions&&g.openPositions.length>0);
-  const summaryEl=document.getElementById('openPositionsSummary');
-  if (upcomingWithOpen.length>0) {
-    document.getElementById('openPositionsSummaryText').textContent=
-      `${upcomingWithOpen.length} upcoming game${upcomingWithOpen.length!==1?'s':''} ${upcomingWithOpen.length!==1?'have':'has'} open crew positions`;
-    summaryEl.style.display='flex';
-  } else {
-    summaryEl.style.display='none';
-  }
-
   filtered=SCHEDULE.filter(g=>{
     if (hidePast&&g.date<TODAY) return false;
     return nameMatchesGame(name,g);
@@ -668,9 +662,11 @@ function render() {
       const logoHtml=logoUrl
         ? `<img src="${logoUrl}" alt="${g.opponent}" class="team-logo" onerror="this.style.display='none'">`
         : `<div class="team-logo-placeholder">${(g.opponent||'?').substring(0,3).toUpperCase()}</div>`;
-      const crewRows=sortRoles(g.roles||{}).map(([rName,pName])=>{
-        const isMe=name&&pName.toLowerCase().includes(name.toLowerCase());
-        return `<div class="crew-row"><span class="crew-role">${rName}</span><span class="crew-name${isMe?' highlight':''}">${pName}</span></div>`;
+      const crewRows=sortRoles(buildDisplayRoles(g.roles||{})).map(([rName,pName])=>{
+        const isOpen=pName===OPEN_MARKER;
+        const isMe=!isOpen&&name&&pName.toLowerCase().includes(name.toLowerCase());
+        const displayName=isOpen?'Open':pName;
+        return `<div class="crew-row"><span class="crew-role">${rName}</span><span class="crew-name${isMe?' highlight':''}${isOpen?' open-role':''}">${displayName}</span></div>`;
       }).join('');
       const highlightClass=showHighlight?(isMine?' crewed':' not-crewed'):'';
       return `<div class="game-card${past?' past':''}${isNext?' upcoming-next':''}${highlightClass}">
@@ -697,7 +693,6 @@ function render() {
               </button>
             </div>
           </div>
-          ${(g.openPositions&&g.openPositions.length)?`<div class="open-positions-flag"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Open: ${g.openPositions.join(', ')}</div>`:''}
           <div class="times">
             <div class="time-item">Puck drop <strong>${g.gameTime||'TBD'}</strong></div>
             <div class="time-item">Crew call <strong>${g.crewCall||'—'}</strong></div>
