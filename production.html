@@ -100,8 +100,10 @@
 .sched-wrap .crew-role{color:var(--text2);font-size:11px;flex-shrink:0;margin-right:8px;}
 .sched-wrap .crew-name{color:var(--text);font-weight:500;text-align:right;}
 .sched-wrap .crew-name.open-role{color:#C8102E;font-weight:700;}
-.sched-wrap .crew-name.highlight{color:var(--red);font-weight:700;}
-@media(prefers-color-scheme:dark){.sched-wrap .crew-name.highlight{color:#f07080;}}
+.sched-wrap .crew-name.highlight{color:#1a5fb4;font-weight:700;}
+@media(prefers-color-scheme:dark){.sched-wrap .crew-name.highlight{color:#6ea8fe;}}
+.sched-wrap .open-note{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 14px 0;font-size:12px;font-weight:700;color:#C8102E;text-align:right;}
+.sched-wrap .open-note i{font-size:14px;color:#C8102E;flex-shrink:0;}
 .sched-wrap .empty{text-align:center;padding:3.5rem 1rem;color:var(--text3);}
 .sched-wrap .empty i{font-size:36px;display:block;margin-bottom:10px;}
 .sched-wrap .s-loading{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:14px;}
@@ -350,7 +352,10 @@ const ROLE_ORDER = [
 // list. Any position NOT in this list is simply omitted when blank (as
 // before) — but if it DOES have a name filled in, it still displays normally
 // regardless of whether it's tracked here.
-const TRACKED_POSITIONS = ROLE_ORDER;
+// Lighting Engineer is excluded from Open-tracking (that position doesn't
+// have to be staffed every game) but stays in ROLE_ORDER so it still
+// displays in its normal sorted spot whenever it does have a name.
+const TRACKED_POSITIONS = ROLE_ORDER.filter(pos => pos !== 'Lighting Engineer');
 
 function sortRoles(rolesObj) {
   return Object.entries(rolesObj).sort(([a],[b]) => {
@@ -369,6 +374,11 @@ function buildDisplayRoles(rolesObj) {
     if (!merged[pos]) merged[pos] = OPEN_MARKER;
   }
   return merged;
+}
+
+function hasOpenPosition(g) {
+  const roles = g.roles||{};
+  return TRACKED_POSITIONS.some(pos => !roles[pos]);
 }
 
 const TEAM_LOGOS = {
@@ -693,6 +703,7 @@ function render() {
               </button>
             </div>
           </div>
+          ${hasOpenPosition(g)?'<div class="open-note"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Open Position(s)</div>':''}
           <div class="times">
             <div class="time-item">Puck drop <strong>${g.gameTime||'TBD'}</strong></div>
             <div class="time-item">Crew call <strong>${g.crewCall||'—'}</strong></div>
