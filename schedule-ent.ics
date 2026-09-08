@@ -6,6 +6,14 @@ X-WR-CALNAME:Panthers Entertainment 2026-27
 X-WR-TIMEZONE:America/New_York
 METHOD:PUBLISH
 BEGIN:VEVENT
+UID:reccBGUqARl1yq4jh@panthers-ent
+DTSTART;TZID=America/New_York:20260915T180000
+DTEND;TZID=America/New_York:20260915T233000
+SUMMARY:Panthers vs Staff Orientation
+DESCRIPTION:Ice Crew Call: \nDance Team Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Entertainment\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
 UID:recCAoi5qfN7WypRZ@panthers-ent
 DTSTART;TZID=America/New_York:20260920T190000
 DTEND;TZID=America/New_York:20260921T003000
