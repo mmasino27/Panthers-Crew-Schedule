@@ -19,7 +19,17 @@
 .sched-wrap .greeting-text strong{display:block;font-size:16px;font-weight:600;}
 .sched-wrap .greeting-clear{font-size:12px;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;}
 .sched-wrap .greeting-clear:hover{background:rgba(255,255,255,0.1);color:#fff;}
-.sched-wrap .search-row{display:flex;gap:8px;margin-bottom:1.25rem;position:relative;}
+.sched-wrap .open-positions-summary{background:#fdecea;color:#8a1c11;border:1px solid #f3b9b0;border-radius:var(--radius-lg);padding:0.75rem 1.125rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;animation:fadeIn 0.3s ease;}
+.sched-wrap .open-positions-summary i{font-size:18px;color:#C8102E;flex-shrink:0;}
+.sched-wrap .open-positions-flag{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 14px 2px;font-size:12px;font-weight:600;color:#8a1c11;text-align:right;}
+.sched-wrap .open-positions-flag i{font-size:14px;color:#C8102E;flex-shrink:0;}
+.sched-wrap .search-row{display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;position:relative;flex-wrap:wrap;}
+.sched-wrap .search-row .toggle-btn{flex-shrink:0;white-space:nowrap;}
+.sched-wrap .highlight-legend{display:flex;gap:16px;font-size:12px;color:var(--text2);margin:-0.75rem 0 1.25rem;}
+.sched-wrap .highlight-legend span{display:inline-flex;align-items:center;gap:5px;}
+.sched-wrap .highlight-legend i{font-size:13px;}
+.sched-wrap .highlight-legend span:first-child i{color:#1a5fb4;}
+.sched-wrap .highlight-legend span:last-child i{color:var(--border2);}
 .sched-wrap .search-wrap{flex:1;position:relative;}
 .sched-wrap .search-wrap i.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:17px;pointer-events:none;}
 .sched-wrap input[type="text"],.sched-wrap select{width:100%;height:42px;padding:0 12px 0 36px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;outline:none;appearance:none;}
@@ -58,6 +68,9 @@
 .sched-wrap .game-card:hover{border-color:var(--border2);}
 .sched-wrap .game-card.past{opacity:0.5;}
 .sched-wrap .game-card.upcoming-next{border-color:#B9975B;border-width:2px;}
+.sched-wrap .game-card.crewed{border-color:#1a5fb4;border-width:2px;background:#f0f6ff;}
+.sched-wrap .game-card.not-crewed{opacity:0.4;}
+.sched-wrap .game-card.not-crewed.past{opacity:0.25;}
 .sched-wrap .card-main{padding:0.875rem 1.125rem;cursor:pointer;}
 .sched-wrap .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
 .sched-wrap .card-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
@@ -161,6 +174,11 @@
   <div id="tab-schedule" class="tab-panel active">
     <div class="sched-wrap">
 
+      <div id="openPositionsSummary" class="open-positions-summary" style="display:none;">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        <span id="openPositionsSummaryText"></span>
+      </div>
+
       <div id="greetingBanner" style="display:none;" class="greeting">
         <div class="greeting-left">
           <i class="ti ti-user-check" aria-hidden="true"></i>
@@ -178,6 +196,13 @@
           <input type="text" id="nameSearch" placeholder="Search your name…" oninput="onNameInput()" onkeydown="onKeyDown(event)" autocomplete="off" spellcheck="false">
           <div class="suggestions" id="suggestions" style="display:none;"></div>
         </div>
+        <button class="toggle-btn" id="toggleHighlight" onclick="toggleHighlightMode()" style="display:none;" title="Show every game, with yours highlighted, instead of only yours">
+          <i class="ti ti-list-details" aria-hidden="true"></i> Show all &amp; highlight mine
+        </button>
+      </div>
+      <div id="highlightLegend" class="highlight-legend" style="display:none;">
+        <span><i class="ti ti-square-rounded-filled" aria-hidden="true"></i> Your games</span>
+        <span><i class="ti ti-square-rounded" aria-hidden="true"></i> Not yours</span>
       </div>
 
       <div class="stats">
@@ -367,6 +392,17 @@ function getLogoUrl(opponent) {
 let SCHEDULE = [];
 const TODAY = new Date().toISOString().split('T')[0];
 let hidePast = false;
+let highlightMode = false;
+
+function toggleHighlightMode() {
+  highlightMode = !highlightMode;
+  const btn = document.getElementById('toggleHighlight');
+  btn.classList.toggle('active', highlightMode);
+  btn.innerHTML = highlightMode
+    ? '<i class="ti ti-list-details" aria-hidden="true"></i> Show only mine'
+    : '<i class="ti ti-list-details" aria-hidden="true"></i> Show all &amp; highlight mine';
+  render();
+}
 let savedName = localStorage.getItem('crew_name') || '';
 let allNames = [];
 let nameInputTimer = null;
@@ -554,10 +590,27 @@ let filtered=[];
 function render() {
   const name=document.getElementById('nameSearch').value.trim();
 
+  // Open Positions summary — reflects the whole season, independent of name search
+  const upcomingWithOpen=SCHEDULE.filter(g=>g.date>=TODAY&&g.openPositions&&g.openPositions.length>0);
+  const summaryEl=document.getElementById('openPositionsSummary');
+  if (upcomingWithOpen.length>0) {
+    document.getElementById('openPositionsSummaryText').textContent=
+      `${upcomingWithOpen.length} upcoming game${upcomingWithOpen.length!==1?'s':''} ${upcomingWithOpen.length!==1?'have':'has'} open crew positions`;
+    summaryEl.style.display='flex';
+  } else {
+    summaryEl.style.display='none';
+  }
+
   filtered=SCHEDULE.filter(g=>{
     if (hidePast&&g.date<TODAY) return false;
     return nameMatchesGame(name,g);
   });
+
+  // In highlight mode, show every game (respecting hidePast) instead of
+  // only the name-matched ones — filtered above still drives stats/.ics export.
+  const displayGames = (highlightMode && name && name.length>=2)
+    ? SCHEDULE.filter(g=>!(hidePast&&g.date<TODAY))
+    : filtered;
 
   const upcoming=filtered.filter(g=>g.date>=TODAY);
   const nextGame=upcoming[0]||null;
@@ -574,6 +627,10 @@ function render() {
 
   document.getElementById('resultCount').textContent=filtered.length===SCHEDULE.length?`${SCHEDULE.length} events`:`${filtered.length} of ${SCHEDULE.length} events`;
   document.getElementById('dlBtn').disabled=filtered.length===0;
+
+  const toggleHighlightBtn=document.getElementById('toggleHighlight');
+  toggleHighlightBtn.style.display=(name&&name.length>=2)?'inline-flex':'none';
+  document.getElementById('highlightLegend').style.display=(highlightMode&&name&&name.length>=2)?'flex':'none';
 
   if (name&&name.length>=2) {
     document.getElementById('greetingName').textContent=name;
@@ -592,18 +649,20 @@ function render() {
   } else { document.getElementById('greetingBanner').style.display='none'; }
 
   const list=document.getElementById('gameList');
-  if (!filtered.length) { list.innerHTML='<div class="empty"><i class="ti ti-calendar-off" aria-hidden="true"></i><p>No events found.</p></div>'; return; }
+  if (!displayGames.length) { list.innerHTML='<div class="empty"><i class="ti ti-calendar-off" aria-hidden="true"></i><p>No events found.</p></div>'; return; }
 
   const byMonth={};
-  filtered.forEach(g=>{ const mk=monthKey(g.date); if (!byMonth[mk]) byMonth[mk]=[]; byMonth[mk].push(g); });
+  displayGames.forEach(g=>{ const mk=monthKey(g.date); if (!byMonth[mk]) byMonth[mk]=[]; byMonth[mk].push(g); });
   const isNextId=nextGame?nextGame.id:null;
+  const showHighlight=highlightMode&&name&&name.length>=2;
 
   list.innerHTML=Object.entries(byMonth).map(([mk,games])=>{
     const monthLabel=new Date(mk+'-02').toLocaleDateString('en-US',{month:'long',year:'numeric'});
     const cards=games.map(g=>{
       const past=g.date<TODAY;
       const isNext=g.id===isNextId;
-      const myRoles=name?getRolesForName(name,g):(role?[role]:[]);
+      const myRoles=name?getRolesForName(name,g):[];
+      const isMine=myRoles.length>0;
       const days=daysUntil(g.date);
       const logoUrl=getLogoUrl(g.opponent);
       const logoHtml=logoUrl
@@ -613,7 +672,8 @@ function render() {
         const isMe=name&&pName.toLowerCase().includes(name.toLowerCase());
         return `<div class="crew-row"><span class="crew-role">${rName}</span><span class="crew-name${isMe?' highlight':''}">${pName}</span></div>`;
       }).join('');
-      return `<div class="game-card${past?' past':''}${isNext?' upcoming-next':''}">
+      const highlightClass=showHighlight?(isMine?' crewed':' not-crewed'):'';
+      return `<div class="game-card${past?' past':''}${isNext?' upcoming-next':''}${highlightClass}">
         <div class="card-main" onclick="toggleCrew('${g.id}')">
           <div class="card-top">
             <div class="card-left">
@@ -637,6 +697,7 @@ function render() {
               </button>
             </div>
           </div>
+          ${(g.openPositions&&g.openPositions.length)?`<div class="open-positions-flag"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Open: ${g.openPositions.join(', ')}</div>`:''}
           <div class="times">
             <div class="time-item">Puck drop <strong>${g.gameTime||'TBD'}</strong></div>
             <div class="time-item">Crew call <strong>${g.crewCall||'—'}</strong></div>
