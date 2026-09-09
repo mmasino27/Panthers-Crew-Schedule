@@ -144,17 +144,45 @@ jobs:
             if ap == 'AM' and h == 12: h = 0
             return h, mn
 
+          # Convert local America/New_York time to a UTC 'Z' timestamp — this
+          # sidesteps needing an embedded VTIMEZONE block entirely (a common
+          # source of parsing failures in stricter clients like Outlook) and
+          # correctly handles the EST/EDT transition since the season spans it.
+          from zoneinfo import ZoneInfo
+          from datetime import timedelta
+          NY_TZ = ZoneInfo('America/New_York')
+
           def to_ics_dt(date_str, time_str, offset_mins=0):
             y, mo, d = map(int, date_str.split('-'))
             t = parse_time(time_str)
-            if not t: return f'{y}{mo:02d}{d:02d}T120000'
-            from datetime import datetime as dt2
-            base = dt2(y, mo, d, t[0], t[1])
-            from datetime import timedelta
-            base += timedelta(minutes=offset_mins)
-            return base.strftime('%Y%m%dT%H%M%S')
+            if not t:
+              local_dt = datetime(y, mo, d, 12, 0, tzinfo=NY_TZ)
+            else:
+              local_dt = datetime(y, mo, d, t[0], t[1], tzinfo=NY_TZ)
+            local_dt += timedelta(minutes=offset_mins)
+            utc_dt = local_dt.astimezone(timezone.utc)
+            return utc_dt.strftime('%Y%m%dT%H%M%SZ')
+
+          # RFC 5545 requires lines over 75 octets to be "folded" (wrapped
+          # with a leading space on continuation lines). Our DESCRIPTION
+          # lines routinely exceed this — unfolded long lines are a classic
+          # cause of ICS parsing failures, especially in Outlook.
+          def fold_ical_line(line):
+            encoded_len = len(line.encode('utf-8'))
+            if encoded_len <= 75:
+              return line
+            parts = []
+            remaining = line
+            while len(remaining.encode('utf-8')) > 75:
+              # Safe ASCII-width slice; content here is plain ASCII so
+              # char-count and byte-count folding are equivalent.
+              parts.append(remaining[:75])
+              remaining = ' ' + remaining[75:]
+            parts.append(remaining)
+            return '\r\n'.join(parts)
 
           def build_ics(records, calname):
+            dtstamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
             lines = [
               'BEGIN:VCALENDAR', 'VERSION:2.0',
               'PRODID:-//FLA Panthers//Production Crew Schedule//EN',
@@ -168,15 +196,17 @@ jobs:
               lines += [
                 'BEGIN:VEVENT',
                 f'UID:{g["id"]}@panthers-prod',
-                f'DTSTART;TZID=America/New_York:{start}',
-                f'DTEND;TZID=America/New_York:{end}',
+                f'DTSTAMP:{dtstamp}',
+                f'DTSTART:{start}',
+                f'DTEND:{end}',
                 f'SUMMARY:Panthers vs {g["opponent"]}',
                 f'DESCRIPTION:{desc}',
                 'LOCATION:Amerant Bank Arena\\, Sunrise\\, FL',
                 'END:VEVENT',
               ]
             lines.append('END:VCALENDAR')
-            return '\r\n'.join(lines)
+            return '\r\n'.join(fold_ical_line(l) for l in lines)
+
 
           # Shared, full-season feed (unchanged — used when no name is picked)
           with open('schedule.ics', 'w') as fout:
