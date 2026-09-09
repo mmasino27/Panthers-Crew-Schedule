@@ -441,11 +441,18 @@ function slugifyName(name) {
   return name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
 }
 
+// The GitHub Pages default domain serves this same repo's content
+// completely separately from whatever access restriction may be applied
+// to the custom domain — using it here means calendar apps (which fetch
+// server-side, with no way to click through a login prompt) can actually
+// reach the file, even if the custom domain is password-protected.
+const GITHUB_PAGES_BASE = 'https://florida-panthers.github.io/Panthers-Crew-Schedule/';
+
 function setupSubscribeLinks(name) {
   const exactMatch = name && allNames.some(n => n.toLowerCase() === name.toLowerCase());
   const slug = exactMatch ? slugifyName(name) : '';
   const relativePath = slug ? `schedules/${slug}.ics` : 'schedule.ics';
-  const icsUrl = new URL(relativePath, window.location.href).href;
+  const icsUrl = new URL(relativePath, GITHUB_PAGES_BASE).href;
   const hostAndPath = icsUrl.replace(/^https?:\/\//, '');
   const googleLink = document.getElementById('googleSubLink');
   const appleLink = document.getElementById('appleSubLink');
