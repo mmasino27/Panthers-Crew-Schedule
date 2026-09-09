@@ -220,7 +220,8 @@
           <span id="liveSubscribeLabel" style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;align-self:center;margin-right:4px;">Live Subscribe (All Staff)</span>
           <a href="#" id="googleSubLink" target="_blank" rel="noopener" class="dl-btn" style="text-decoration:none;background:#4285F4;" title="Subscribe — auto-updates in Google Calendar"><i class="ti ti-brand-google" aria-hidden="true"></i> Google</a>
           <a href="#" id="appleSubLink" class="dl-btn" style="text-decoration:none;background:#555;" title="Subscribe — auto-updates in Apple Calendar"><i class="ti ti-brand-apple" aria-hidden="true"></i> Apple</a>
-          <a href="#" id="outlookSubLink" target="_blank" rel="noopener" class="dl-btn" style="text-decoration:none;background:#0072C6;" title="Subscribe — auto-updates in Outlook"><i class="ti ti-brand-windows" aria-hidden="true"></i> Outlook</a>
+          <a href="#" id="outlookWorkSubLink" target="_blank" rel="noopener" class="dl-btn" style="text-decoration:none;background:#0072C6;" title="Subscribe — auto-updates in Outlook (work/Microsoft 365 accounts)"><i class="ti ti-brand-windows" aria-hidden="true"></i> Outlook (Work)</a>
+          <a href="#" id="outlookPersonalSubLink" target="_blank" rel="noopener" class="dl-btn" style="text-decoration:none;background:#0072C6;" title="Subscribe — auto-updates in Outlook (personal Outlook.com/Hotmail accounts)"><i class="ti ti-brand-windows" aria-hidden="true"></i> Outlook (Personal)</a>
         </div>
       </div>
 
@@ -448,11 +449,13 @@ function setupSubscribeLinks(name) {
   const hostAndPath = icsUrl.replace(/^https?:\/\//, '');
   const googleLink = document.getElementById('googleSubLink');
   const appleLink = document.getElementById('appleSubLink');
-  const outlookLink = document.getElementById('outlookSubLink');
+  const outlookWorkLink = document.getElementById('outlookWorkSubLink');
+  const outlookPersonalLink = document.getElementById('outlookPersonalSubLink');
   const label = document.getElementById('liveSubscribeLabel');
-  if (googleLink) googleLink.href = 'https://calendar.google.com/calendar/r?cid=webcal://' + hostAndPath;
+  if (googleLink) googleLink.href = 'https://www.google.com/calendar/render?cid=webcal://' + hostAndPath;
   if (appleLink) appleLink.href = 'webcal://' + hostAndPath;
-  if (outlookLink) outlookLink.href = 'https://outlook.live.com/calendar/0/addfromweb?url=' + encodeURIComponent(icsUrl);
+  if (outlookWorkLink) outlookWorkLink.href = 'https://outlook.office.com/calendar/0/addfromweb?url=webcal://' + hostAndPath;
+  if (outlookPersonalLink) outlookPersonalLink.href = 'https://outlook.live.com/calendar/0/addfromweb?url=webcal://' + hostAndPath;
   if (label) label.textContent = slug ? `Live Subscribe (${name})` : 'Live Subscribe (All Staff)';
 }
 setupSubscribeLinks('');
