@@ -106,11 +106,38 @@ jobs:
           with open('schedule.json', 'w') as fout:
             json.dump({'updated': updated, 'records': clean}, fout)
 
+          # ── Tracked positions — must match TRACKED_POSITIONS in production.html ──
+          # Used only to detect "mandatory all-staff" events (every tracked
+          # position blank), which get included in EVERY person's personal feed.
+          TRACKED_POSITIONS = [
+            'Executive Producer','Entertainment Producer','Associate Producer','Production Associate',
+            'Digital Displays Associate','Engineer/AV Lead','Engineer 2','PA Announcer','Host',
+            'Stage Manager 1','Stage Manager 2','Stage Manager 3','Stage Manager 4',
+            'Organist','Spotter','DJ','Director','Technical Director','7Point Audio / Music',
+            'Ross Tessera 1 (LED)','Ross Tessera 2 (LED)','Ross Kiva (Playback)',
+            'CG 1','CG 2','Social Media',
+            'Replay (A & B)','Replay (C & D)','Replay (E & F)','Replay (Tagging)',
+            'Audio 1 / Mixer','Shader',
+            'Camera 1','Camera 2','Camera 3','Camera 4 (Video Coach Cam)','Camera 5 (Wireless)','Camera 6 (Wireless)',
+            'Grip','Robo Cam (Faceoff 1-4)','Robo Cam Scoreboard (1-2)','Robo Cam Scoreboard (3 & 4)',
+            'Lighting','Spot 1','Spot 2','Spot 3','Spot 4',
+            'SMT','Audio Engineer',
+          ]
+
+          def is_mandatory_all_staff(rec):
+            return all(not rec['roles'].get(pos) for pos in TRACKED_POSITIONS)
+
+          import re
+          def slugify(name):
+            s = name.strip().lower()
+            s = re.sub(r'\s+', '-', s)
+            s = re.sub(r'[^a-z0-9\-]', '', s)
+            return s
+
           # Also write a subscribable .ics file for Google Calendar
-          import re as _re
           def parse_time(t):
             if not t: return None
-            m = _re.search(r'(\d+):(\d+)\s*(AM|PM)', str(t), _re.I)
+            m = re.search(r'(\d+):(\d+)\s*(AM|PM)', str(t), re.I)
             if not m: return None
             h, mn, ap = int(m.group(1)), int(m.group(2)), m.group(3).upper()
             if ap == 'PM' and h != 12: h += 12
@@ -127,38 +154,67 @@ jobs:
             base += timedelta(minutes=offset_mins)
             return base.strftime('%Y%m%dT%H%M%S')
 
-          lines = [
-            'BEGIN:VCALENDAR', 'VERSION:2.0',
-            'PRODID:-//FLA Panthers//Production Crew Schedule//EN',
-            'CALSCALE:GREGORIAN', 'X-WR-CALNAME:Panthers Production 2026-27',
-            'X-WR-TIMEZONE:America/New_York', 'METHOD:PUBLISH',
-          ]
-          for g in clean:
-            start = to_ics_dt(g['date'], g.get('crewCall') or g.get('gameTime'))
-            end   = to_ics_dt(g['date'], g.get('crewCall') or g.get('gameTime'), 330)
-            desc = f"Crew Call: {g.get('crewCall','TBD')}\\nPuck Drop: {g.get('gameTime','TBD')}\\nFlorida Panthers Game Presentation\\nAmerant Bank Arena | Sunrise FL"
-            lines += [
-              'BEGIN:VEVENT',
-              f'UID:{g["id"]}@panthers-prod',
-              f'DTSTART;TZID=America/New_York:{start}',
-              f'DTEND;TZID=America/New_York:{end}',
-              f'SUMMARY:Panthers vs {g["opponent"]}',
-              f'DESCRIPTION:{desc}',
-              'LOCATION:Amerant Bank Arena\\, Sunrise\\, FL',
-              'END:VEVENT',
+          def build_ics(records, calname):
+            lines = [
+              'BEGIN:VCALENDAR', 'VERSION:2.0',
+              'PRODID:-//FLA Panthers//Production Crew Schedule//EN',
+              'CALSCALE:GREGORIAN', f'X-WR-CALNAME:{calname}',
+              'X-WR-TIMEZONE:America/New_York', 'METHOD:PUBLISH',
             ]
-          lines.append('END:VCALENDAR')
-          with open('schedule.ics', 'w') as fout:
-            fout.write('\r\n'.join(lines))
+            for g in records:
+              start = to_ics_dt(g['date'], g.get('crewCall') or g.get('gameTime'))
+              end   = to_ics_dt(g['date'], g.get('crewCall') or g.get('gameTime'), 330)
+              desc = f"Crew Call: {g.get('crewCall','TBD')}\\nPuck Drop: {g.get('gameTime','TBD')}\\nFlorida Panthers Game Presentation\\nAmerant Bank Arena | Sunrise FL"
+              lines += [
+                'BEGIN:VEVENT',
+                f'UID:{g["id"]}@panthers-prod',
+                f'DTSTART;TZID=America/New_York:{start}',
+                f'DTEND;TZID=America/New_York:{end}',
+                f'SUMMARY:Panthers vs {g["opponent"]}',
+                f'DESCRIPTION:{desc}',
+                'LOCATION:Amerant Bank Arena\\, Sunrise\\, FL',
+                'END:VEVENT',
+              ]
+            lines.append('END:VCALENDAR')
+            return '\r\n'.join(lines)
 
-          print(f'Wrote {len(clean)} records to schedule.json + schedule.ics')
+          # Shared, full-season feed (unchanged — used when no name is picked)
+          with open('schedule.ics', 'w') as fout:
+            fout.write(build_ics(clean, 'Panthers Production 2026-27'))
+
+          # ── Per-person feeds ────────────────────────────────────────────────
+          # One .ics per crew member, containing only their games plus any
+          # mandatory all-staff (fully-unstaffed) events — mirrors the site's
+          # own personalization logic exactly.
+          all_names = set()
+          for rec in clean:
+            for val in rec['roles'].values():
+              for part in val.split(','):
+                part = part.strip()
+                if part:
+                  all_names.add(part)
+
+          os.makedirs('schedules', exist_ok=True)
+          for person in sorted(all_names):
+            person_lower = person.lower()
+            person_records = [
+              rec for rec in clean
+              if is_mandatory_all_staff(rec)
+              or any(person_lower in val.lower() for val in rec['roles'].values())
+            ]
+            slug = slugify(person)
+            if not slug: continue
+            with open(f'schedules/{slug}.ics', 'w') as fout:
+              fout.write(build_ics(person_records, f'Panthers Production — {person}'))
+
+          print(f'Wrote {len(clean)} records to schedule.json + schedule.ics, plus {len(all_names)} personal feeds in schedules/')
           EOF
 
       - name: Commit and push schedule files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add schedule.json schedule.ics
+          git add schedule.json schedule.ics schedules/
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "Update schedule $(date -u '+%Y-%m-%d')"
           git push
