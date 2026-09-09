@@ -381,6 +381,14 @@ function hasOpenPosition(g) {
   return TRACKED_POSITIONS.some(pos => !roles[pos]);
 }
 
+// A "mandatory all-staff" event: every tracked position is blank. These
+// should never be greyed out, should show up in everyone's personal list
+// regardless of name search, and always highlight blue.
+function isMandatoryAllStaff(g) {
+  const roles = g.roles||{};
+  return TRACKED_POSITIONS.every(pos => !roles[pos]);
+}
+
 const TEAM_LOGOS = {
   'Anaheim Ducks':'ANA','Arizona Coyotes':'ARI','Boston Bruins':'BOS',
   'Buffalo Sabres':'BUF','Calgary Flames':'CGY','Carolina Hurricanes':'CAR',
@@ -519,6 +527,7 @@ function togglePast() {
 
 function nameMatchesGame(name, game) {
   if (!name) return true;
+  if (isMandatoryAllStaff(game)) return true;
   const q = name.toLowerCase();
   return Object.values(game.roles||{}).some(v => v && v.toLowerCase().includes(q));
 }
@@ -678,7 +687,8 @@ function render() {
         const displayName=isOpen?'Open':pName;
         return `<div class="crew-row"><span class="crew-role">${rName}</span><span class="crew-name${isMe?' highlight':''}${isOpen?' open-role':''}">${displayName}</span></div>`;
       }).join('');
-      const highlightClass=showHighlight?(isMine?' crewed':' not-crewed'):'';
+      const allStaff=isMandatoryAllStaff(g);
+      const highlightClass=allStaff?' crewed':(showHighlight?(isMine?' crewed':' not-crewed'):'');
       return `<div class="game-card${past?' past':''}${isNext?' upcoming-next':''}${highlightClass}">
         <div class="card-main" onclick="toggleCrew('${g.id}')">
           <div class="card-top">
