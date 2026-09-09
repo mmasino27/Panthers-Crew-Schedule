@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLA Panthers//Production Crew Schedule//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Panthers Production — DJ Express
+X-WR-TIMEZONE:America/New_York
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:recg3sdmM1vTW5zO7@panthers-prod
+DTSTART;TZID=America/New_York:20260915T180000
+DTEND;TZID=America/New_York:20260915T233000
+SUMMARY:Panthers vs Mandatory Staff Orientation
+DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recxiT1QslxHQH3LG@panthers-prod
+DTSTART;TZID=America/New_York:20261128T153000
+DTEND;TZID=America/New_York:20261128T210000
+SUMMARY:Panthers vs Tampa Bay Lightning
+DESCRIPTION:Crew Call: 3:30 PM\nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recnBzkm7HfwO81Og@panthers-prod
+DTSTART;TZID=America/New_York:20261226T153000
+DTEND;TZID=America/New_York:20261226T210000
+SUMMARY:Panthers vs Tampa Bay Lightning
+DESCRIPTION:Crew Call: 3:30 PM\nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+END:VCALENDAR

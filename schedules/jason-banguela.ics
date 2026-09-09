@@ -1,0 +1,72 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLA Panthers//Production Crew Schedule//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Panthers Production — Jason Banguela
+X-WR-TIMEZONE:America/New_York
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:recg3sdmM1vTW5zO7@panthers-prod
+DTSTART;TZID=America/New_York:20260915T180000
+DTEND;TZID=America/New_York:20260915T233000
+SUMMARY:Panthers vs Mandatory Staff Orientation
+DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:rec7Q6URGtPzBA5fv@panthers-prod
+DTSTART;TZID=America/New_York:20261102T163000
+DTEND;TZID=America/New_York:20261102T220000
+SUMMARY:Panthers vs Detroit Red Wings
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recuaBsFDXnhy4ljP@panthers-prod
+DTSTART;TZID=America/New_York:20261104T170000
+DTEND;TZID=America/New_York:20261104T223000
+SUMMARY:Panthers vs Chicago Blackhawks
+DESCRIPTION:Crew Call: 5:00 PM\nPuck Drop: 7:30 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:rectrh1pFZroJQAkh@panthers-prod
+DTSTART;TZID=America/New_York:20261117T163000
+DTEND;TZID=America/New_York:20261117T220000
+SUMMARY:Panthers vs Edmonton Oilers
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:rece49D3l4NYx5wfi@panthers-prod
+DTSTART;TZID=America/New_York:20261208T163000
+DTEND;TZID=America/New_York:20261208T220000
+SUMMARY:Panthers vs Boston Bruins
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recGFteTlfeX4ukQS@panthers-prod
+DTSTART;TZID=America/New_York:20261221T163000
+DTEND;TZID=America/New_York:20261221T220000
+SUMMARY:Panthers vs St. Louis Blues
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recLhCjvIus0Tt6cd@panthers-prod
+DTSTART;TZID=America/New_York:20261228T163000
+DTEND;TZID=America/New_York:20261228T220000
+SUMMARY:Panthers vs Nashville Predators
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:rect7J9mahLDYSISw@panthers-prod
+DTSTART;TZID=America/New_York:20261230T163000
+DTEND;TZID=America/New_York:20261230T220000
+SUMMARY:Panthers vs Buffalo Sabres
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+END:VCALENDAR

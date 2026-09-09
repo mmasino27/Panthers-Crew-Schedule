@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLA Panthers//Production Crew Schedule//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Panthers Production — Jeff Griffith
+X-WR-TIMEZONE:America/New_York
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:recg3sdmM1vTW5zO7@panthers-prod
+DTSTART;TZID=America/New_York:20260915T180000
+DTEND;TZID=America/New_York:20260915T233000
+SUMMARY:Panthers vs Mandatory Staff Orientation
+DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:rec25Wk9MAqhPI5Rc@panthers-prod
+DTSTART;TZID=America/New_York:20261015T163000
+DTEND;TZID=America/New_York:20261015T220000
+SUMMARY:Panthers vs Vancouver Canucks
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+BEGIN:VEVENT
+UID:recuaBsFDXnhy4ljP@panthers-prod
+DTSTART;TZID=America/New_York:20261104T170000
+DTEND;TZID=America/New_York:20261104T223000
+SUMMARY:Panthers vs Chicago Blackhawks
+DESCRIPTION:Crew Call: 5:00 PM\nPuck Drop: 7:30 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+LOCATION:Amerant Bank Arena\, Sunrise\, FL
+END:VEVENT
+END:VCALENDAR
