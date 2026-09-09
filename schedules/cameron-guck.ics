@@ -7,66 +7,82 @@ X-WR-TIMEZONE:America/New_York
 METHOD:PUBLISH
 BEGIN:VEVENT
 UID:recg3sdmM1vTW5zO7@panthers-prod
-DTSTART;TZID=America/New_York:20260915T180000
-DTEND;TZID=America/New_York:20260915T233000
+DTSTAMP:20260909T225247Z
+DTSTART:20260915T220000Z
+DTEND:20260916T033000Z
 SUMMARY:Panthers vs Mandatory Staff Orientation
-DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presenta
+ tion\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:recVGSz06HxnYSdUc@panthers-prod
-DTSTART;TZID=America/New_York:20261009T180000
-DTEND;TZID=America/New_York:20261009T233000
+DTSTAMP:20260909T225247Z
+DTSTART:20261009T220000Z
+DTEND:20261010T033000Z
 SUMMARY:Panthers vs Opening Night Dress Rehearsal
-DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: \nPuck Drop: 6:00 PM\nFlorida Panthers Game Presenta
+ tion\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:rec25Wk9MAqhPI5Rc@panthers-prod
-DTSTART;TZID=America/New_York:20261015T163000
-DTEND;TZID=America/New_York:20261015T220000
+DTSTAMP:20260909T225247Z
+DTSTART:20261015T203000Z
+DTEND:20261016T020000Z
 SUMMARY:Panthers vs Vancouver Canucks
-DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game P
+ resentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:rec7Q6URGtPzBA5fv@panthers-prod
-DTSTART;TZID=America/New_York:20261102T163000
-DTEND;TZID=America/New_York:20261102T220000
+DTSTAMP:20260909T225247Z
+DTSTART:20261102T213000Z
+DTEND:20261103T030000Z
 SUMMARY:Panthers vs Detroit Red Wings
-DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game P
+ resentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:rectrh1pFZroJQAkh@panthers-prod
-DTSTART;TZID=America/New_York:20261117T163000
-DTEND;TZID=America/New_York:20261117T220000
+DTSTAMP:20260909T225247Z
+DTSTART:20261117T213000Z
+DTEND:20261118T030000Z
 SUMMARY:Panthers vs Edmonton Oilers
-DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game P
+ resentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:rece49D3l4NYx5wfi@panthers-prod
-DTSTART;TZID=America/New_York:20261208T163000
-DTEND;TZID=America/New_York:20261208T220000
+DTSTAMP:20260909T225247Z
+DTSTART:20261208T213000Z
+DTEND:20261209T030000Z
 SUMMARY:Panthers vs Boston Bruins
-DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game P
+ resentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:recZVYca7Fxwlhz6C@panthers-prod
-DTSTART;TZID=America/New_York:20261210T163000
-DTEND;TZID=America/New_York:20261210T220000
+DTSTAMP:20260909T225247Z
+DTSTART:20261210T213000Z
+DTEND:20261211T030000Z
 SUMMARY:Panthers vs Pittsburgh Penguins
-DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 4:30 PM\nPuck Drop: 7:00 PM\nFlorida Panthers Game P
+ resentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 BEGIN:VEVENT
 UID:recMssE9zEUhPi5Nz@panthers-prod
-DTSTART;TZID=America/New_York:20270102T103000
-DTEND;TZID=America/New_York:20270102T160000
+DTSTAMP:20260909T225247Z
+DTSTART:20270102T153000Z
+DTEND:20270102T210000Z
 SUMMARY:Panthers vs Montreal Canadiens
-DESCRIPTION:Crew Call: 10:30 AM\nPuck Drop: 1:00 PM\nFlorida Panthers Game Presentation\nAmerant Bank Arena | Sunrise FL
+DESCRIPTION:Crew Call: 10:30 AM\nPuck Drop: 1:00 PM\nFlorida Panthers Game 
+ Presentation\nAmerant Bank Arena | Sunrise FL
 LOCATION:Amerant Bank Arena\, Sunrise\, FL
 END:VEVENT
 END:VCALENDAR
